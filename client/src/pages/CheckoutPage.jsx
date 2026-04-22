@@ -61,22 +61,82 @@ const CheckoutPage = () => {
     }
   };
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const confirmPayment = async () => {
     if (!paymentSession) return;
-    setPaymentLoading(true);
-    setError("");
-    try {
-      const { data } = await api.post("/payments/confirm", {
-        provider: paymentMethod,
-        mode: paymentSession.mode,
-        sessionId: paymentSession.sessionId
+    
+    if (paymentSession.mode === "live" && paymentSession.provider === "RAZORPAY") {
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        setError("Razorpay SDK failed to load. Are you online?");
+        return;
+      }
+
+      const options = {
+        key: paymentSession.keyId,
+        amount: Math.round(paymentSession.amount * 100),
+        currency: paymentSession.currency,
+        name: "Wishly",
+        description: "Payment for Order",
+        order_id: paymentSession.sessionId,
+        handler: async function (response) {
+          try {
+            setPaymentLoading(true);
+            const { data } = await api.post("/payments/confirm", {
+              provider: paymentMethod,
+              mode: paymentSession.mode,
+              sessionId: response.razorpay_order_id,
+              transactionId: response.razorpay_payment_id,
+              signature: response.razorpay_signature
+            });
+            setPaymentResult(data);
+            setSuccess("Payment completed successfully.");
+          } catch (err) {
+            setError(getErrorMessage(err, "Payment confirmation failed"));
+          } finally {
+            setPaymentLoading(false);
+          }
+        },
+        prefill: {
+          name: address.fullName,
+          contact: address.phone
+        },
+        theme: {
+          color: "#9d4edd"
+        }
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.on("payment.failed", function (response) {
+        setError(`Payment failed: ${response.error.description}`);
       });
-      setPaymentResult(data);
-      setSuccess("Payment completed successfully.");
-    } catch (err) {
-      setError(getErrorMessage(err, "Payment confirmation failed"));
-    } finally {
-      setPaymentLoading(false);
+      paymentObject.open();
+    } else {
+      setPaymentLoading(true);
+      setError("");
+      try {
+        const { data } = await api.post("/payments/confirm", {
+          provider: paymentMethod,
+          mode: paymentSession.mode,
+          sessionId: paymentSession.sessionId
+        });
+        setPaymentResult(data);
+        setSuccess("Payment completed successfully.");
+      } catch (err) {
+        setError(getErrorMessage(err, "Payment confirmation failed"));
+      } finally {
+        setPaymentLoading(false);
+      }
     }
   };
 

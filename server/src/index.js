@@ -7,7 +7,7 @@ import path from "path";
 import fs from "fs/promises";
 import { fileURLToPath } from "url";
 import env from "./config/env.js";
-import connectDB from "./config/db.js";
+import mongoose from "mongoose";
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -22,7 +22,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, "..", "uploads");
 
-await connectDB(env.mongoUri);
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch((err) => console.log("Mongo Error ❌", err));
 await fs.mkdir(uploadsDir, { recursive: true });
 
 app.use(

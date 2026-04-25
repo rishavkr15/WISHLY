@@ -2,6 +2,16 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+if (process.env.NODE_ENV === "production") {
+  const required = ["MONGO_URI", "JWT_SECRET", "CLIENT_URL"];
+  for (const key of required) {
+    if (!process.env[key]) {
+      console.error(`❌ Missing required environment variable: ${key}`);
+      process.exit(1);
+    }
+  }
+}
+
 const env = {
   port: Number(process.env.PORT) || 5000,
   nodeEnv: process.env.NODE_ENV || "development",
@@ -10,7 +20,10 @@ const env = {
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || "",
   razorpayKeyId: process.env.RAZORPAY_KEY_ID || "",
-  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || ""
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || "",
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || "",
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || ""
 };
 
 export default env;

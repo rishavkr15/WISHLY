@@ -22,6 +22,17 @@ export const createPaymentSession = asyncHandler(async (req, res) => {
     throw new Error("Unsupported payment method");
   }
 
+  if (env.nodeEnv === "production") {
+    if (provider === "STRIPE" && !env.stripeSecretKey) {
+      res.status(500);
+      throw new Error("Stripe is not configured. Please add STRIPE_SECRET_KEY.");
+    }
+    if (provider === "RAZORPAY" && (!env.razorpayKeyId || !env.razorpayKeySecret)) {
+      res.status(500);
+      throw new Error("Razorpay is not configured. Please add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.");
+    }
+  }
+
   const normalizedItems = await normalizeCartItems(items);
   const { totalPrice } = calculateOrderAmounts(normalizedItems);
   const amountInPaise = Math.round(totalPrice * 100);
@@ -84,6 +95,17 @@ export const confirmPayment = asyncHandler(async (req, res) => {
   if (!supportedMethods.includes(paymentProvider)) {
     res.status(400);
     throw new Error("Unsupported payment provider");
+  }
+
+  if (env.nodeEnv === "production") {
+    if (paymentProvider === "STRIPE" && !env.stripeSecretKey) {
+      res.status(500);
+      throw new Error("Stripe is not configured. Please add STRIPE_SECRET_KEY.");
+    }
+    if (paymentProvider === "RAZORPAY" && (!env.razorpayKeyId || !env.razorpayKeySecret)) {
+      res.status(500);
+      throw new Error("Razorpay is not configured. Please add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.");
+    }
   }
 
   if (mode === "live" && paymentProvider === "STRIPE" && env.stripeSecretKey && sessionId) {

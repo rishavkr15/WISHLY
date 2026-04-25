@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "description": "Wishly - men's e-commerce website built with React, Node.js, and MongoDB",
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
-    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "install:all": "npm install --legacy-peer-deps && npm --prefix server install --legacy-peer-deps && npm --prefix client install --legacy-peer-deps",
     "dev": "concurrently \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "seed": "npm --prefix server run seed",
-    "build": "npm --prefix client run build",
+    "build": "npm run install:all && npm --prefix client run build",
     "start": "npm --prefix server start"
   },
   "devDependencies": {

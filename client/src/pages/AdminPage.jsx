@@ -122,7 +122,7 @@ const AdminPage = () => {
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const { data } = await api.post("/admin/upload-image", formData, {
+      const { data } = await api.post("/uploads/upload-image", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       setForm((prev) => ({ ...prev, image: data.url }));

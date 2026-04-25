@@ -43,6 +43,7 @@ app.use(
     origin: [
       "http://localhost:5173", 
       "https://wishly-1.onrender.com", 
+      "https://wishly-2.onrender.com",
       env.clientUrl
     ],
     credentials: true

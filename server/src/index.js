@@ -40,7 +40,11 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: [env.clientUrl, "https://wishly-fullstack.onrender.com"], // Add Render URL here if known
+    origin: [
+      "http://localhost:5173", 
+      "https://wishly-1.onrender.com", 
+      env.clientUrl
+    ],
     credentials: true
   })
 );

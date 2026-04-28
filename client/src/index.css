@@ -845,3 +845,61 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* React Quill Dark Mode Overrides */
+.rich-editor {
+  background: #0f0d16;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: rgba(20, 18, 29, 0.95);
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+  min-height: 120px;
+  font-family: inherit !important;
+  font-size: 1rem !important;
+  color: var(--text) !important;
+}
+
+.ql-toolbar.ql-snow .ql-stroke {
+  stroke: var(--muted) !important;
+}
+
+.ql-toolbar.ql-snow .ql-fill {
+  fill: var(--muted) !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker {
+  color: var(--muted) !important;
+}
+
+.ql-toolbar.ql-snow .ql-active .ql-stroke {
+  stroke: var(--purple-glow) !important;
+}
+
+.ql-toolbar.ql-snow .ql-active .ql-fill {
+  fill: var(--purple-glow) !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker-options {
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+}
+
+.product-description p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+.product-description ul,
+.product-description ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+

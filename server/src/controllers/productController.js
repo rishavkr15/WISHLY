@@ -72,3 +72,35 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
   res.set("Cache-Control", "public, max-age=120");
   res.json(product);
 });
+
+export const createProductWithImage = asyncHandler(async (req, res) => {
+  const { name, price, description, category } = req.body;
+
+  if (!name || !price || !description || !category) {
+    res.status(400);
+    throw new Error("All fields (name, price, description, category) are required");
+  }
+
+  if (!req.file) {
+    res.status(400);
+    throw new Error("Image file is required");
+  }
+
+  // Create unique slug from name
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now();
+  
+  // Use relative path to avoid host issues in production, or full URL
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+  const product = await Product.create({
+    name,
+    slug,
+    price: Number(price),
+    description,
+    category,
+    image: imageUrl,
+    stock: req.body.stock ? Number(req.body.stock) : 10
+  });
+
+  res.status(201).json(product);
+});

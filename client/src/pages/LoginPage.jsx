@@ -9,6 +9,7 @@ const LoginPage = () => {
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const from = location.state?.from || "/products";
 
@@ -42,13 +43,36 @@ const LoginPage = () => {
           </label>
           <label className="field-label">
             Password
-            <input
-              className="input"
-              type="password"
-              required
-              value={form.password}
-              onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-            />
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                className="input"
+                type={showPassword ? "text" : "password"}
+                required
+                value={form.password}
+                onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                style={{ paddingRight: "3rem", width: "100%" }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "1.2rem",
+                  padding: "0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: 0.6
+                }}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "👁️" : "👁️‍🗨️"}
+              </button>
+            </div>
           </label>
 
           {error && <p className="error-text">{error}</p>}

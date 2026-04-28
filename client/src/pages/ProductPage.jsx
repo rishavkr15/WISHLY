@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import api, { getErrorMessage } from "../api/client";
 import { useCart } from "../context/CartContext";
 import SkeletonCard from "../components/SkeletonCard";
+import { toast } from "react-toastify";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -81,7 +82,7 @@ const ProductPage = () => {
           <p className="eyebrow">{product.category}</p>
           <h2>{product.name}</h2>
           <p className="product-price large">INR {product.price.toLocaleString("en-IN")}</p>
-          <p>{product.description}</p>
+          <div className="product-description" dangerouslySetInnerHTML={{ __html: product.description }} />
           <p className="muted">
             Rating: {product.rating.toFixed(1)} ({product.reviewsCount} reviews)
           </p>
@@ -112,7 +113,7 @@ const ProductPage = () => {
           <button
             className="primary-btn full"
             type="button"
-            onClick={() =>
+            onClick={() => {
               addToCart({
                 productId: product._id,
                 slug: product.slug,
@@ -122,8 +123,9 @@ const ProductPage = () => {
                 quantity,
                 size,
                 stock: product.stock
-              })
-            }
+              });
+              toast.success(`${quantity} x ${product.name} added to cart!`);
+            }}
           >
             Add To Cart
           </button>

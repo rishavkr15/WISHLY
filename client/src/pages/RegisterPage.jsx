@@ -8,10 +8,13 @@ const RegisterPage = () => {
 
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (nameError) return;
     const result = await register(form);
     if (result.ok) {
       navigate("/products", { replace: true });
@@ -33,9 +36,22 @@ const RegisterPage = () => {
               className="input"
               required
               value={form.name}
-              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val && !/^[A-Za-z\s]+$/.test(val)) {
+                  setNameError("Name can only contain alphabets and spaces.");
+                } else {
+                  setNameError("");
+                }
+                setForm((prev) => ({ ...prev, name: val }));
+              }}
             />
           </label>
+          {nameError && (
+            <p className="error-text" style={{ marginTop: "0.2rem", marginBottom: "10px", fontSize: "0.85rem" }}>
+              {nameError}
+            </p>
+          )}
           <label className="field-label">
             Email
             <input
@@ -48,14 +64,37 @@ const RegisterPage = () => {
           </label>
           <label className="field-label">
             Password
-            <input
-              className="input"
-              type="password"
-              minLength={6}
-              required
-              value={form.password}
-              onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-            />
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                className="input"
+                type={showPassword ? "text" : "password"}
+                minLength={6}
+                required
+                value={form.password}
+                onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                style={{ paddingRight: "3rem", width: "100%" }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "1.2rem",
+                  padding: "0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: 0.6
+                }}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "👁️" : "👁️‍🗨️"}
+              </button>
+            </div>
           </label>
 
           {error && <p className="error-text">{error}</p>}

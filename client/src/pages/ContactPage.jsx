@@ -8,9 +8,11 @@ const ContactPage = () => {
     message: ""
   });
   const [sent, setSent] = useState(false);
+  const [nameError, setNameError] = useState("");
 
   const onSubmit = (e) => {
     e.preventDefault();
+    if (nameError) return;
     setSent(true);
     setForm({ name: "", email: "", subject: "", message: "" });
   };
@@ -32,9 +34,22 @@ const ContactPage = () => {
               className="input"
               required
               value={form.name}
-              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val && !/^[A-Za-z\s]+$/.test(val)) {
+                  setNameError("Name can only contain alphabets and spaces.");
+                } else {
+                  setNameError("");
+                }
+                setForm((prev) => ({ ...prev, name: val }));
+              }}
             />
           </label>
+          {nameError && (
+            <p className="error-text" style={{ marginTop: "0.2rem", marginBottom: "10px", fontSize: "0.85rem", color: "var(--color-error, #f44336)" }}>
+              {nameError}
+            </p>
+          )}
           <label className="field-label">
             Email
             <input

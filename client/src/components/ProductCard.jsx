@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
@@ -15,6 +16,7 @@ const ProductCard = ({ product }) => {
       size: product.sizeOptions?.[0] || "M",
       stock: product.stock
     });
+    toast.success(`1 x ${product.name} added to cart!`);
   };
 
   return (

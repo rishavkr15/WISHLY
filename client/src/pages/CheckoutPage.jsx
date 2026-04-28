@@ -20,6 +20,7 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, totals, clearCart } = useCart();
   const [address, setAddress] = useState(emptyAddress);
+  const [formErrors, setFormErrors] = useState({});
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [paymentSession, setPaymentSession] = useState(null);
   const [paymentResult, setPaymentResult] = useState(null);
@@ -146,6 +147,12 @@ const CheckoutPage = () => {
     setError("");
     setSuccess("");
 
+    if (Object.values(formErrors).some((err) => err !== "")) {
+      setLoading(false);
+      setError("Please fix the validation errors in the form before submitting.");
+      return;
+    }
+
     if (isOnline(paymentMethod) && paymentResult?.status !== "paid") {
       setLoading(false);
       setError("Complete online payment before placing order.");
@@ -185,17 +192,52 @@ const CheckoutPage = () => {
         <form className="panel form-grid" onSubmit={onSubmit}>
           <h3>Shipping Details</h3>
 
-          {Object.entries(address).map(([key, value]) => (
-            <label key={key} className="field-label">
-              {key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}
-              <input
-                className="input"
-                required={key !== "line2"}
-                value={value}
-                onChange={(e) => setAddress((prev) => ({ ...prev, [key]: e.target.value }))}
-              />
-            </label>
-          ))}
+          {Object.entries(address).map(([key, value]) => {
+            const isPhone = key === "phone";
+            const isFullName = key === "fullName";
+            return (
+              <div key={key} className="field-group">
+                <label className="field-label">
+                  {key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}
+                  <input
+                    className="input"
+                    required={key !== "line2"}
+                    value={value}
+                    maxLength={isPhone ? 10 : undefined}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      let err = "";
+                      
+                      if (isFullName) {
+                        if (val && !/^[A-Za-z\s]+$/.test(val)) {
+                          err = "Name can only contain alphabets and spaces.";
+                        }
+                      }
+                      
+                      if (isPhone) {
+                        const phoneRegex = /^[6-9]\d{9}$/;
+                        if (val && !phoneRegex.test(val)) {
+                          err = "Phone must be 10 digits and start with 6-9.";
+                        }
+                        if (val && !/^\d*$/.test(val)) {
+                           // if user types non-digits, just don't allow it or show error
+                           err = "Phone must contain only numbers.";
+                        }
+                      }
+                      
+                      setFormErrors((prev) => ({ ...prev, [key]: err }));
+                      setAddress((prev) => ({ ...prev, [key]: val }));
+                    }}
+                  />
+                </label>
+                {formErrors[key] && (
+                  <p className="error-text" style={{ marginTop: "0.2rem", marginBottom: "10px", fontSize: "0.85rem" }}>
+                    {formErrors[key]}
+                  </p>
+                )}
+              </div>
+            );
+          })}
 
           <label className="field-label">
             Payment Method

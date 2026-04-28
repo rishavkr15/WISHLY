@@ -12,12 +12,18 @@ export const protect = asyncHandler(async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  const decoded = jwt.verify(token, env.jwtSecret);
-  const user = await User.findById(decoded.id).select("-password");
+  let decoded;
+  try {
+    decoded = jwt.verify(token, env.jwtSecret);
+  } catch (error) {
+    res.status(401);
+    throw new Error("Session expired or invalid token. Please log in again.");
+  }
 
+  const user = await User.findById(decoded.id).select("-password");
   if (!user) {
     res.status(401);
-    throw new Error("Not authorized");
+    throw new Error("Not authorized, user not found");
   }
 
   req.user = user;

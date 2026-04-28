@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -17,12 +19,14 @@ import ContactPage from "./pages/ContactPage";
 import FaqPage from "./pages/FaqPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import AdminPage from "./pages/AdminPage";
+import AddProductPage from "./pages/AddProductPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const App = () => {
   return (
     <BrowserRouter>
       <div className="app-shell">
+        <ToastContainer position="bottom-right" autoClose={3000} theme="dark" />
         <AnnouncementBar />
         <Navbar />
         <main>
@@ -48,6 +52,14 @@ const App = () => {
               element={
                 <ProtectedAdminRoute>
                   <AdminPage />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/add-product"
+              element={
+                <ProtectedAdminRoute>
+                  <AddProductPage />
                 </ProtectedAdminRoute>
               }
             />

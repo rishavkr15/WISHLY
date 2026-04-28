@@ -17,6 +17,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const originalRequestUrl = error.config?.url || "";
+      if (!originalRequestUrl.includes("/auth/login")) {
+        localStorage.removeItem("wishly_auth");
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const getErrorMessage = (error, fallback = "Something went wrong") =>
   error?.response?.data?.message || error?.message || fallback;
 

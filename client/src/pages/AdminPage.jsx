@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import api, { getErrorMessage } from "../api/client";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const blankProduct = {
   name: "",
@@ -189,6 +192,9 @@ const AdminPage = () => {
         >
           Orders
         </button>
+        <Link to="/admin/add-product" className="ghost-btn">
+          Add Product (Full Stack Form)
+        </Link>
       </div>
 
       {loading ? (
@@ -210,13 +216,11 @@ const AdminPage = () => {
                 </label>
                 <label className="field-label">
                   Description
-                  <textarea
-                    className="input textarea"
-                    required
+                  <ReactQuill
+                    theme="snow"
                     value={form.description}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, description: e.target.value }))
-                    }
+                    onChange={(val) => setForm((prev) => ({ ...prev, description: val }))}
+                    className="rich-editor"
                   />
                 </label>
                 <label className="field-label">

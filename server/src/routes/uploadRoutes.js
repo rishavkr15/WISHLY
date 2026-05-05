@@ -4,7 +4,6 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { adminOnly, protect } from "../middleware/auth.js";
 import env from "../config/env.js";
 
@@ -37,19 +36,9 @@ const localStorage = multer.diskStorage({
   }
 });
 
-// Cloudinary Storage Setup
-const cloudStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "wishly_uploads",
-    allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"]
-  }
-});
-
 // Determine storage based on environment
-const storage = (env.nodeEnv === "production" && env.cloudinaryCloudName) 
-  ? cloudStorage 
-  : localStorage;
+const useCloudinary = env.nodeEnv === "production" && !!env.cloudinaryCloudName;
+const storage = useCloudinary ? multer.memoryStorage() : localStorage;
 
 const fileFilter = (req, file, cb) => {
   if (file?.mimetype?.startsWith("image/")) {
@@ -67,21 +56,39 @@ const upload = multer({
   }
 });
 
-router.post("/upload-image", protect, adminOnly, upload.single("image"), (req, res) => {
+router.post("/upload-image", protect, adminOnly, upload.single("image"), async (req, res) => {
   if (!req.file) {
     res.status(400);
     throw new Error("Image file is required");
   }
 
-  // Handle Cloudinary upload response vs Local upload response
-  const imageUrl = req.file.path 
-    ? req.file.path 
-    : `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-
-  res.status(201).json({
-    filename: req.file.filename || req.file.public_id,
-    url: imageUrl
-  });
+  try {
+    if (useCloudinary) {
+      // Cloudinary upload using base64 stream
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+      
+      const result = await cloudinary.uploader.upload(dataURI, {
+        resource_type: "auto",
+        folder: "wishly_uploads",
+      });
+      
+      res.status(201).json({
+        filename: result.public_id,
+        url: result.secure_url
+      });
+    } else {
+      // Local upload response
+      const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+      res.status(201).json({
+        filename: req.file.filename,
+        url: imageUrl
+      });
+    }
+  } catch (error) {
+    console.error("Cloudinary Upload Error:", error);
+    res.status(500).json({ message: "Image upload failed" });
+  }
 });
 
 export default router;

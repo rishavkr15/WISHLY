@@ -1,6 +1,12 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "https://wishly-backend-4r3f.onrender.com/api";
+let BASE_URL = import.meta.env.VITE_API_URL || "https://wishly-backend-4r3f.onrender.com/api";
+
+// Auto-fix if user forgot /api in their environment variables
+if (!BASE_URL.endsWith('/api')) {
+  if (BASE_URL.endsWith('/')) BASE_URL = BASE_URL.slice(0, -1);
+  BASE_URL = `${BASE_URL}/api`;
+}
 
 const api = axios.create({
   baseURL: BASE_URL,

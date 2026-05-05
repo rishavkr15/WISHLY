@@ -4,7 +4,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "https://wishly-backend-4r3f.on
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000
+  timeout: 60000 // Increased from 10s to 60s to allow Render free tier to wake up
 });
 
 api.interceptors.request.use((config) => {

@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const isProd = import.meta.env.MODE === "production";
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: isProd ? "https://wishly-1.onrender.com/api" : (import.meta.env.VITE_API_URL || "http://localhost:5000/api"),
+  baseURL: BASE_URL,
   timeout: 10000
 });
 

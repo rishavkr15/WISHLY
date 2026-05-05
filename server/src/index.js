@@ -38,14 +38,14 @@ connectDB();
 // Trust proxy for Render/Vercel
 app.set("trust proxy", 1);
 
+const allowedOrigins = [env.clientUrl];
+if (env.nodeEnv === "development") {
+  allowedOrigins.push("http://localhost:5173");
+}
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", 
-      "https://wishly-1.onrender.com", 
-      "https://wishly-2.onrender.com",
-      env.clientUrl
-    ],
+    origin: allowedOrigins,
     credentials: true
   })
 );

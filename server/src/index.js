@@ -38,12 +38,20 @@ connectDB();
 // Trust proxy for Render/Vercel
 app.set("trust proxy", 1);
 
-app.use(
-  cors({
-    origin: env.clientUrl,
-    credentials: true
-  })
-);
+// CORS configuration - allow localhost in development
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [env.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(helmet({ crossOriginResourcePolicy: false })); // allow images to be served if static
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));

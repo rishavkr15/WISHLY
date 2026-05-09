@@ -15,19 +15,19 @@ const runSeed = async () => {
 
     await Product.insertMany(seedProducts);
 
-    const adminEmail = "admin@wishly.com";
+    const adminEmail = "rishavkumar181815@gmail.com";
     const adminExists = await User.findOne({ email: adminEmail });
     if (!adminExists) {
       await User.create({
         name: "Wishly Admin",
         email: adminEmail,
-        password: "Admin@123",
+        password: "Rishav@15",
         isAdmin: true
       });
     }
 
     console.log("Seed completed successfully");
-    console.log("Admin login: admin@wishly.com / Admin@123");
+    console.log("Admin login: rishavkumar181815@gmail.com / Rishav@15");
     process.exit(0);
   } catch (error) {
     console.error("Seed failed:", error.message);

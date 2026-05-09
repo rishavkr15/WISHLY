@@ -88,8 +88,8 @@ It will:
 
 Seed creates:
 
-- Email: `admin@wishly.com`
-- Password: `Admin@123`
+- Email: `rishavkumar181815@gmail.com`
+- Password: `Rishav@15`
 
 ## Payment Configuration (Optional Live Mode)
 
